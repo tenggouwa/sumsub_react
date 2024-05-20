@@ -1,26 +1,33 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import SumsubWebSdk from "@sumsub/websdk-react";
+import { Button, Form, Input } from '@arco-design/web-react';
 import './App.css';
+import "@arco-design/web-react/dist/css/arco.css";
 
 function App() {
-  const [token, setToken] = useState('_act-sbx-jwt-eyJhbGciOiJub25lIn0.eyJqdGkiOiJfYWN0LXNieC1iMjI4ODM4OC0zY2U1LTQ1ODEtODM3Zi1hOTM2MGQyOGIyN2UtdjIiLCJ1cmwiOiJodHRwczovL2FwaS5zdW1zdWIuY29tIn0.-v2')
-  useEffect(() => {
-    getToken()
-  }, [])
+  const [form] = Form.useForm();
+
+  const [token, setToken] = useState('')
 
   const applicantEmail = "";
   const applicantPhone = "";
-  const getToken = async () => {
-    const res = await axios.get('https://kyc.blockpayend.com/api/public/kyc/access-token?userId=1');
+  const getToken = async (userId) => {
+    const res = await axios.get(`https://kyc.blockpayend.com/api/public/kyc/access-token?userId=${userId}`);
     if (res?.data?.success) {
       setToken(res?.data?.data?.token)
+    }
+  }
+  const onSubmit = () => {
+    const userId = form.getFieldValue('UID');
+    if (userId) {
+      getToken(userId)
     }
   }
   return (
     <div className="App">
       {
-        token && (
+        token ? (
           <SumsubWebSdk
             accessToken={token}
             updateAccessToken={() => console.log("updateAccessToken")}
@@ -53,6 +60,15 @@ function App() {
             }}
             onError={(data) => console.log("onError", data)}
           />
+        ) : (
+          <Form form={form}>
+            <Form.Item field="UID" label="UID">
+              <Input />
+            </Form.Item>
+            <Form.Item>
+              <Button type='primary' onClick={onSubmit}>验证</Button>
+            </Form.Item>
+          </Form>
         )
       }
     </div>
