@@ -12,7 +12,7 @@ function App() {
   const applicantEmail = "";
   const applicantPhone = "";
   const getToken = async () => {
-    const res = await axios.get('http://8.149.134.150/api/public/kyc/access-token?userId=1');
+    const res = await axios.get('https://kyc.blockpayend.com/api/public/kyc/access-token?userId=1');
     if (res?.data?.success) {
       setToken(res?.data?.data?.token)
     }
